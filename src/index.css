@@ -1,13 +1,169 @@
-body {
+:root {
+  /* colors */
+  --clr-black: 0, 0%, 0%;
+  --clr-white: 0, 0%, 100%;
+
+  /* font sizes */
+  /* --fs-900: clamp(5rem, 8vw + 1rem, 9.375rem);
+    --fs-800: 3.5rem;
+    --fs-700: 1.5rem;
+    --fs-600: 1rem; */
+  --fs-500: 4rem;
+  --fs-400: 3.5rem;
+  --fs-400: 3rem;
+  --fs-300: 2.2rem;
+  --fs-200: 1.6rem;
+
+  /* font-families */
+  --ff-prim: "Poppins", sans-serif;
+  /* font weight: 300, 400, 500 */
+
+  --p-top-sm: 2rem;
+  --p-top-m: 5rem;
+  --p-top-b: 10rem;
+  /* --flow-space: 1rem; */
+}
+
+/* --------------------- */
+/*          Reset        */
+/* --------------------- */
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+figure,
+picture {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  font-weight: 300;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  /* background-color: transparent; */
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 62.5%;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+body {
+  font-family: var(--ff-prim);
+  font-size: var(--fs-200);
+  font-weight: 300;
+  text-align: center;
+  color: hsl(var(--clr-white));
+
+  background-color: hsl(var(--clr-black));
+  background-image: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    rgba(62, 133, 238, 1) 1.1%,
+    rgba(227, 137, 240, 1) 43.7%,
+    rgba(243, 193, 124, 1) 89.7%
+  );
+
+  line-height: 1.5;
+  min-height: 100vh;
+
+  overflow-x: hidden;
+}
+
+/* make images easier to work with */
+img,
+picture {
+  width: 100%;
+  display: block;
+}
+
+/* make forms elements easier to work with */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* remove animations for people who've turned them off */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------- */
+/*   Utility classes     */
+/* --------------------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap; /* added line */
+  border: 0;
+}
+
+.container {
+  padding: 3rem 2rem;
+}
+
+.p-top-b {
+  padding-top: var(--p-top-b);
+}
+
+.word-no-break {
+  white-space: nowrap;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(62,133,238,1) 1.1%, rgba(227,137,240,1) 43.7%, rgba(243,193,124,1) 89.7% ); */
