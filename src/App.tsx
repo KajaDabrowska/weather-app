@@ -2,6 +2,8 @@ import React, { Fragment } from "react";
 import { useState, useEffect } from "react";
 
 import Image from "./components/image/image.component";
+import TabList from "./components/tablist/tablist.component";
+import Search from "./components/search/search.component";
 
 import dropImage from "./images/image-drop.svg";
 import windImage from "./images/image-wind.svg";
@@ -18,6 +20,7 @@ export type Coords = {
 // const API_KEY = "47ecb06584efcd3a09d06d7e70fd2cb8";
 const API_KEY = "3585e187fe2dcd51bd3ecd35186e4637";
 
+//TODO loading message?
 const App = () => {
   const [coords, setCoords] = useState<Coords>({ lat: null, lng: null });
   const [cityName, setCityName] = useState<string | null>(null);
@@ -102,17 +105,17 @@ const App = () => {
       const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=${API_KEY}`;
       // console.log(url);
 
-      const res = await fetch(url);
-      const data = await res.json();
+      // const res = await fetch(url);
+      // const data = await res.json();
 
-      console.log("Weather data: ", data);
-      setNowTemp(data.main.temp);
-      setNowDesc(data.weather[0].description);
-      setNowIcon(data.weather[0].icon);
+      // console.log("Weather data: ", data);
+      // setNowTemp(data.main.temp);
+      // setNowDesc(data.weather[0].description);
+      // setNowIcon(data.weather[0].icon);
 
-      setNowWind(data.wind.speed);
-      setNowHumid(data.main.humidity);
-      setNowClouds(data.clouds.all);
+      // setNowWind(data.wind.speed);
+      // setNowHumid(data.main.humidity);
+      // setNowClouds(data.clouds.all);
     } catch (err) {
       //TODO error msg
       console.log(err, "error fetching WEATHER data");
@@ -137,45 +140,52 @@ const App = () => {
 
   return (
     <Fragment>
-      <header className="header--container container">
-        <h1 className="city">{cityName}</h1>
-        <p className="date">{date}</p>
-      </header>
+      <div className="container">
+        <header className="header--container ">
+          <h1 className="city">{cityName}</h1>
+          <p className="date">{date}</p>
+        </header>
 
-      <main className="container">
-        <div className="main--container glass">
-          <div className="big--container ">
-            <div className="tempDesc">
-              <div className="temp">
-                {nowTemp}° <sup>C</sup>
+        <main className="">
+          <div className="main--container glass">
+            <div className="big--container ">
+              <div className="tempDesc">
+                <div className="temp shadow">
+                  {nowTemp}° <sup>C</sup>
+                </div>
+                <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
               </div>
-              <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
-            </div>
 
-            {/*@ts-ignore  */}
-            <Image imageCode={nowIcon ? nowIcon : null} />
-          </div>
-          <div className="small--container">
-            <div className="details">
-              <img src={windImage} alt="" className="image" />
               {/*@ts-ignore  */}
-              <p>{Math.trunc(nowWind)} km/h</p>
+              <Image imageCode={nowIcon ? nowIcon : null} />
             </div>
+            <div className="small--container">
+              <div className="details">
+                <img src={windImage} alt="" className="image shadow" />
+                {/*@ts-ignore  */}
+                <p>{Math.trunc(nowWind)} km/h</p>
+              </div>
 
-            <div className="details">
-              <img src={dropImage} alt="" className="image" />
-              <p>{nowHumid}%</p>
-            </div>
+              <div className="details details__humid">
+                <img src={dropImage} alt="" className="image shadow" />
+                <p>{nowHumid}%</p>
+              </div>
 
-            <div className="details">
-              <img src={cloudImage} alt="" className="image" />
-              <p>{nowClouds}%</p>
+              <div className="details">
+                <img src={cloudImage} alt="" className="image shadow" />
+                <p>{nowClouds}%</p>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+          {/* ------------------------ */}
+          {/* ------------------------ */}
+          {/* ------------------------ */}
+          <TabList />
 
-      {/* <main>
+          <Search />
+        </main>
+
+        {/* <main>
       <h1>Hi</h1>
 
       <p>
@@ -192,6 +202,7 @@ const App = () => {
 
       <Image imageCode={nowIcon} />
     </main> */}
+      </div>
     </Fragment>
   );
 };

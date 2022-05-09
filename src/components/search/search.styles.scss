@@ -1,0 +1,68 @@
+@mixin ShrinkLabel {
+  top: 0.1rem;
+  left: 1.6rem;
+  transform: scale(0.9);
+  color: hsl(var(--clr-white), 0.8);
+}
+
+.search {
+  position: relative;
+
+  &__input {
+    max-width: 100%;
+    padding: 1.8rem 2rem;
+    color: hsl(var(--clr-white));
+    font-weight: 400;
+
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+    }
+
+    &.glass {
+      box-shadow: unset;
+    }
+
+    &:focus ~ .search__label {
+      @include ShrinkLabel();
+    }
+    // &:focus ~ .search__btn {
+    //   top: 0.2rem;
+    //   transform: scale(0.9);
+    // }
+  }
+
+  &__label {
+    z-index: 100;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 2rem;
+    font-weight: 500;
+
+    transition: all 0.2s ease-in-out;
+
+    &.shrink {
+      @include ShrinkLabel();
+    }
+
+    &.shadow {
+      text-shadow: 2px 2px 4px rgba(62, 133, 238, 0.2);
+    }
+  }
+
+  &__btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1rem;
+    background-color: transparent;
+    border: none;
+
+    transition: all 0.2s ease-in-out;
+  }
+
+  &__image {
+    z-index: 200;
+    width: 2rem;
+  }
+}

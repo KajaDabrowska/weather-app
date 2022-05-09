@@ -3,28 +3,21 @@
 }
 
 .header--container {
+  margin-bottom: 3.5rem;
+
   .city {
     font-size: 2.5rem;
     font-weight: 500;
   }
 }
 
-//TODO text shadow?
-.glass {
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  padding: 3rem 1rem 2em 1rem;
-}
-
 .main--container {
   display: flex;
   flex-direction: column;
   gap: 3rem;
+
+  padding: 3rem 1rem 2em 1rem;
+  margin-bottom: 2.5rem;
 
   .big--container {
     position: relative;
@@ -33,7 +26,6 @@
     justify-content: center;
     align-items: center;
     text-align: left;
-    padding-left: 3rem;
 
     .tempDesc {
       display: flex;
@@ -52,6 +44,7 @@
 
     .image--main {
       width: 15rem;
+      padding-left: 3rem;
     }
   }
 
@@ -60,6 +53,12 @@
     display: flex;
     justify-content: space-around;
     gap: 1rem;
+
+    .details {
+      &__humid {
+        margin-left: -1.5rem;
+      }
+    }
   }
 
   .image {

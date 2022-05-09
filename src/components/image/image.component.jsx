@@ -9,8 +9,6 @@ import lightningImage from "../../images/image-lightning.svg";
 import snowImage from "../../images/image-snow.svg";
 import mistyImage from "../../images/image-misty.svg";
 
-import "./image.styles.scss";
-
 const Image = (imageCode) => {
   if (!imageCode) return;
 
@@ -37,7 +35,7 @@ const Image = (imageCode) => {
 
   const image = images[Object.values(imageCode)];
 
-  return <img src={image} alt="" className="image--main" />;
+  return <img src={image} alt="" className="image--main shadow--b" />;
 };
 
 export default Image;

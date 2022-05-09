@@ -1,0 +1,43 @@
+.tablist--container {
+  margin-bottom: 3.5rem;
+  //TODO the rest of hours visible by click on "<"
+  overflow-x: hidden;
+
+  .tab-buttons {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 0.5rem;
+  }
+
+  .tab-panel {
+    display: flex;
+    gap: 1rem;
+
+    &--box {
+      padding: 1rem 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 1.2rem;
+
+      &.glass {
+        box-shadow: unset; //TODO
+      }
+    }
+  }
+}
+
+.btn {
+  cursor: pointer;
+
+  background-color: transparent;
+  border: none;
+
+  color: hsl(var(--clr--white));
+  font-weight: 500;
+
+  &.active {
+    font-size: 2rem;
+  }
+}
+
+//TODO make the glass into a filter
