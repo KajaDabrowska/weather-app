@@ -19,12 +19,31 @@ export type Coords = {
 
 // const API_KEY = "47ecb06584efcd3a09d06d7e70fd2cb8";
 const API_KEY = "3585e187fe2dcd51bd3ecd35186e4637";
+// units for API call
+const UNITS = "metric";
+// number of timestamp responses in hourly forecast
+const CNT = 24;
+// what to exclude from API call, divided by ","
+const EXCLUDE = "minutely,alerts";
 
+//TODO initial city if someone doesn't let geolocate themselves?
 //TODO loading message?
 const App = () => {
   const [coords, setCoords] = useState<Coords>({ lat: null, lng: null });
+  const [cityCoords, setCityCoords] = useState<Coords>({
+    lat: null,
+    lng: null,
+  });
+  // console.log(cityCoords);
+
+  //TODO only one cityName variable?
   const [cityName, setCityName] = useState<string | null>(null);
+  const [searchCityName, setSearchCityName] = useState<string | null>(null);
+
+  //TIMEZONE for searched cities
+  const [timeZone, setTimezone] = useState("UTC");
   const [date, setDate] = useState("null");
+  // NOW
   const [nowTemp, setNowTemp] = useState("null");
   const [nowDesc, setNowDesc] = useState("null");
   const [nowIcon, setNowIcon] = useState("null");
@@ -32,6 +51,8 @@ const App = () => {
   const [nowHumid, setNowHumid] = useState("null");
   const [nowWind, setNowWind] = useState("null");
   const [nowClouds, setNowClouds] = useState("null");
+  // HOURLY
+  const [hourlyWeather, setHourlyWeather] = useState("null");
 
   //TODO error msg if geolocation not available
   useEffect(() => {
@@ -46,17 +67,30 @@ const App = () => {
 
   useEffect(() => {
     getDate();
-  }, []);
+  }, [timeZone]);
 
   useEffect(() => {
     getCity();
   }, [coords]);
 
-  useEffect(() => {
-    // console.log("coords changed so i can fetch weather data");
+  const forSearchedCity = {
+    forCity: true,
+    notForCity: false,
+  };
 
-    getWeatherNow();
+  useEffect(() => {
+    console.log("coords changed so i can fetch weather data");
+
+    getWeather(forSearchedCity.notForCity);
   }, [coords]);
+
+  useEffect(() => {
+    getCoordsFromSearchedCity();
+  }, [searchCityName]);
+
+  useEffect(() => {
+    getWeather(forSearchedCity.forCity);
+  }, [cityCoords]);
 
   const getPosition = async () => {
     try {
@@ -72,23 +106,17 @@ const App = () => {
   };
 
   const getDate = () => {
+    setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
     const now = new Date();
 
-    // const day = now.toLocaleString("default", { weekday: "short" });
-    // const dayNum = now.toLocaleString("default", { day: "numeric" });
-    // const month = now.toLocaleString("default", { month: "short" });
     const all = now.toLocaleString("default", {
       weekday: "short",
       day: "numeric",
       month: "short",
+      timeZone: timeZone,
     });
 
-    // console.log("now:", now);
-    // console.log("day:", day);
-    // console.log("day numb:", dayNum);
-    // console.log("month:", month);
-    // console.log("all: ", all);
-    // console.log(all);
     setDate(all);
   };
 
@@ -96,32 +124,41 @@ const App = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const getWeatherNow = async () => {
+  //@ts-ignore
+  const setWeatherVariables = (data) => {
+    setNowTemp(data.current.temp);
+    setNowDesc(data.current.weather[0].description);
+    setNowIcon(data.current.weather[0].icon);
+    setNowWind(data.current.wind_speed);
+    setNowHumid(data.current.humidity);
+    setNowClouds(data.current.clouds);
+    setTimezone(data.timezone);
+
+    // array
+    setHourlyWeather(data.hourly);
+  };
+
+  const getWeather = async (fromSearch: boolean) => {
     try {
-      const { lat, lng } = coords;
+      const { lat, lng } = fromSearch ? cityCoords : coords;
 
       if (lat === null) return;
 
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=${API_KEY}`;
+      const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=${UNITS}&exclude=${EXCLUDE}&appid=${API_KEY}`;
       // console.log(url);
 
-      // const res = await fetch(url);
-      // const data = await res.json();
-
+      const res = await fetch(url);
+      const data = await res.json();
       // console.log("Weather data: ", data);
-      // setNowTemp(data.main.temp);
-      // setNowDesc(data.weather[0].description);
-      // setNowIcon(data.weather[0].icon);
 
-      // setNowWind(data.wind.speed);
-      // setNowHumid(data.main.humidity);
-      // setNowClouds(data.clouds.all);
+      setWeatherVariables(data);
     } catch (err) {
       //TODO error msg
       console.log(err, "error fetching WEATHER data");
     }
   };
 
+  //TODO bookmark cities?
   const getCity = async () => {
     try {
       const { lat, lng } = coords;
@@ -130,19 +167,41 @@ const App = () => {
       const res = await fetch(url);
       const data = await res.json();
 
-      // console.log("City data: ", data);
-
       setCityName(data.city);
     } catch (err) {
       console.log(err);
     }
   };
 
+  const getCoordsFromSearchedCity = async () => {
+    try {
+      if (!searchCityName) return;
+
+      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${searchCityName}&limit=1&appid=${API_KEY}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      // console.log("City data: ", data);
+
+      setCityCoords({ lat: data[0].lat, lng: data[0].lon });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //@ts-ignore
+  const handleSearch = (e, textValue) => {
+    e.preventDefault();
+
+    setSearchCityName(textValue);
+  };
+
   return (
     <Fragment>
       <div className="container">
         <header className="header--container ">
-          <h1 className="city">{cityName}</h1>
+          <h1 className="city">{searchCityName ? searchCityName : cityName}</h1>
           <p className="date">{date}</p>
         </header>
 
@@ -182,38 +241,11 @@ const App = () => {
           {/* ------------------------ */}
           <TabList />
 
-          <Search />
+          <Search handleSearch={handleSearch} />
         </main>
-
-        {/* <main>
-      <h1>Hi</h1>
-
-      <p>
-        coords: {coords.lat}, {coords.lng}
-      </p>
-
-      <p>City name: {cityName}</p>
-
-      <p>data: {date}</p>
-
-      <p>
-        now weather: {nowTemp}, {nowDesc}, {nowIcon}
-      </p>
-
-      <Image imageCode={nowIcon} />
-    </main> */}
       </div>
     </Fragment>
   );
 };
 
 export default App;
-
-// get city
-//https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=52.1391643&longitude=21.0426115&localityLanguage=en
-// "city": "Warsaw",
-//  "countryName": "Poland",
-
-// get day
-
-// get 7 days

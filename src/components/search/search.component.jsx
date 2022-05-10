@@ -4,7 +4,7 @@ import searchTool from "../../images/image-search-tool.svg";
 
 import "./search.styles.scss";
 
-const Search = () => {
+const Search = ({ handleSearch }) => {
   const [textValue, setTextValue] = useState("");
 
   const handleChange = (e) => {
@@ -13,9 +13,11 @@ const Search = () => {
     setTextValue(value);
   };
 
-  console.log(textValue);
   return (
-    <div className="search search--container">
+    <form
+      className="search search--container"
+      onSubmit={(e) => handleSearch(e, textValue)}
+    >
       <input
         type="search"
         id="search-by-city"
@@ -29,12 +31,11 @@ const Search = () => {
         Search by city
       </label>
 
-      {/*TODO actual functionality */}
-      <button className="search__btn">
+      <button type="submit" className="search__btn">
         <span className="sr-only">Search</span>
         <img src={searchTool} alt="" className="search__image" />
       </button>
-    </div>
+    </form>
   );
 };
 
