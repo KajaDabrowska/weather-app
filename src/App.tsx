@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "./components/image/image.component";
 import TabList from "./components/tablist/tablist.component";
 import Search from "./components/search/search.component";
+import LoadingSpinner from "./components/loadingSpinner/loading-spinner.component";
 
 import dropImage from "./images/image-drop.svg";
 import windImage from "./images/image-wind.svg";
@@ -29,6 +30,8 @@ const EXCLUDE = "minutely,alerts";
 //TODO initial city if someone doesn't let geolocate themselves?
 //TODO loading message?
 const App = () => {
+  const [loading, setLoading] = useState(true);
+
   const [coords, setCoords] = useState<Coords>({ lat: null, lng: null });
   const [cityCoords, setCityCoords] = useState<Coords>({
     lat: null,
@@ -52,7 +55,7 @@ const App = () => {
   const [nowWind, setNowWind] = useState("null");
   const [nowClouds, setNowClouds] = useState("null");
   // HOURLY
-  const [hourlyWeather, setHourlyWeather] = useState("null");
+  const [hourlyWeather, setHourlyWeather] = useState(null);
 
   //TODO error msg if geolocation not available
   useEffect(() => {
@@ -136,6 +139,8 @@ const App = () => {
 
     // array
     setHourlyWeather(data.hourly);
+
+    setLoading(!loading);
   };
 
   const getWeather = async (fromSearch: boolean) => {
@@ -199,51 +204,64 @@ const App = () => {
 
   return (
     <Fragment>
-      <div className="container">
-        <header className="header--container ">
-          <h1 className="city">{searchCityName ? searchCityName : cityName}</h1>
-          <p className="date">{date}</p>
-        </header>
+      {/*TODO add LOADING COMPONENT  */}
+      {loading === false ? (
+        <div className="container">
+          <header className="header--container ">
+            <h1 className="city">
+              {searchCityName ? searchCityName : cityName}
+            </h1>
+            <p className="date">{date}</p>
+          </header>
 
-        <main className="">
-          <div className="main--container glass">
-            <div className="big--container ">
-              <div className="tempDesc">
-                <div className="temp shadow">
-                  {nowTemp}° <sup>C</sup>
+          <main className="">
+            <div className="main--container glass">
+              <div className="big--container ">
+                <div className="tempDesc">
+                  <div className="temp shadow">
+                    {/*TODO Math.trunc  */}
+                    {/*@ts-ignore  */}
+                    {nowTemp !== "null" ? Math.trunc(nowTemp) : nowTemp}
+                    <sup className="celcius">
+                      <span className="celcius__degree">°</span>
+                      <span className="celcius__c">c</span>
+                    </sup>
+                  </div>
+                  <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
                 </div>
-                <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
-              </div>
 
-              {/*@ts-ignore  */}
-              <Image imageCode={nowIcon ? nowIcon : null} />
-            </div>
-            <div className="small--container">
-              <div className="details">
-                <img src={windImage} alt="" className="image shadow" />
                 {/*@ts-ignore  */}
-                <p>{Math.trunc(nowWind)} km/h</p>
+                <Image imageCode={nowIcon ? nowIcon : null} size={"big"} />
               </div>
+              <div className="small--container">
+                <div className="details">
+                  <img src={windImage} alt="" className="image shadow" />
+                  {/*@ts-ignore  */}
+                  <p>{Math.trunc(nowWind)} km/h</p>
+                </div>
 
-              <div className="details details__humid">
-                <img src={dropImage} alt="" className="image shadow" />
-                <p>{nowHumid}%</p>
-              </div>
+                <div className="details details__humid">
+                  <img src={dropImage} alt="" className="image shadow" />
+                  <p>{nowHumid}%</p>
+                </div>
 
-              <div className="details">
-                <img src={cloudImage} alt="" className="image shadow" />
-                <p>{nowClouds}%</p>
+                <div className="details">
+                  <img src={cloudImage} alt="" className="image shadow" />
+                  <p>{nowClouds}%</p>
+                </div>
               </div>
             </div>
-          </div>
-          {/* ------------------------ */}
-          {/* ------------------------ */}
-          {/* ------------------------ */}
-          <TabList />
+            {/* ------------------------ */}
+            {/* ------------------------ */}
+            {/* ------------------------ */}
+            {hourlyWeather && <TabList weatherArray={hourlyWeather} />}
 
-          <Search handleSearch={handleSearch} />
-        </main>
-      </div>
+            <Search handleSearch={handleSearch} />
+          </main>
+        </div>
+      ) : (
+        <LoadingSpinner />
+      )}
     </Fragment>
   );
 };

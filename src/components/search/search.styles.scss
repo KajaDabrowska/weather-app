@@ -24,6 +24,7 @@
 
     &:focus ~ .search__label {
       @include ShrinkLabel();
+      cursor: unset;
     }
     // &:focus ~ .search__btn {
     //   top: 0.2rem;
@@ -32,6 +33,7 @@
   }
 
   &__label {
+    cursor: pointer;
     z-index: 100;
     position: absolute;
     top: 50%;
@@ -51,6 +53,7 @@
   }
 
   &__btn {
+    cursor: pointer;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);

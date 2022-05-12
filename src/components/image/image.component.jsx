@@ -9,7 +9,9 @@ import lightningImage from "../../images/image-lightning.svg";
 import snowImage from "../../images/image-snow.svg";
 import mistyImage from "../../images/image-misty.svg";
 
-const Image = (imageCode) => {
+import "./image.styles.scss";
+
+const Image = ({ imageCode, size }) => {
   if (!imageCode) return;
 
   const images = {
@@ -33,9 +35,11 @@ const Image = (imageCode) => {
     "50n": mistyImage,
   };
 
-  const image = images[Object.values(imageCode)];
+  const image = images[imageCode];
 
-  return <img src={image} alt="" className="image--main shadow--b" />;
+  const sizeClass = `${size === "big" ? "image--big" : "image--small"}`;
+
+  return <img src={image} alt="" className={`shadow--b ${sizeClass}`} />;
 };
 
 export default Image;
