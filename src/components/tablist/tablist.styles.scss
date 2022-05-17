@@ -1,7 +1,6 @@
 .tablist--container {
   margin-bottom: 3rem;
   //TODO the rest of hours visible by click on "<"
-  // overflow-x: hidden;
 
   .tab-buttons {
     display: flex;
@@ -13,36 +12,9 @@
   .tab-trail {
     display: flex;
     gap: 1rem;
-    // overflow-x: hidden;
     overflow-x: visible;
 
     transition: all 0.3s ease-in-out;
-
-    ~ .tab-panel__scroll--left {
-      opacity: 0.5;
-    }
-    ~ .tab-panel__scroll--right {
-      opacity: 1 !important;
-    }
-
-    &.scroll--right {
-      transform: translateX(-70%);
-
-      ~ .tab-panel__scroll--left {
-        opacity: 1;
-      }
-      ~ .tab-panel__scroll--right {
-        opacity: 0.5 !important;
-      }
-    }
-    // &.scroll--left {
-    //   ~ .tab-panel__scroll--left {
-    //     opacity: 0.5;
-    //   }
-    //   ~ .tab-panel__scroll--right {
-    //     opacity: 1;
-    //   }
-    // }
   }
 
   .tab-panel {
@@ -55,14 +27,10 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-
-      // background-color: transparent;
-      // border: none;
       color: hsl(var(--clr--white));
       font-size: 2.5rem;
       font-weight: 500;
       padding: 0rem 0.8rem;
-      // box-shadow: unset;
       opacity: 0.5;
 
       &--left {
@@ -71,16 +39,18 @@
       &--right {
         right: -1rem;
       }
+
+      &.active {
+        opacity: 1;
+      }
     }
   }
 }
 
 .btn {
   cursor: pointer;
-
   background-color: transparent;
   border: none;
-
   color: hsl(var(--clr--white));
   font-weight: 500;
 

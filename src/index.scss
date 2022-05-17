@@ -98,6 +98,10 @@ body {
   min-height: 100vh;
 
   overflow-x: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* make images easier to work with */
@@ -148,6 +152,10 @@ select {
 }
 
 .container {
+  max-width: 32rem;
+  height: min(67.5rem, 100vh);
+  border: 2px solid hsl(var(--clr-white));
+  border-radius: 1rem;
   padding: 1.5rem 2rem;
   overflow-x: hidden;
 }

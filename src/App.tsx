@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { useState, useEffect } from "react";
 
 import Image from "./components/image/image.component";
@@ -69,10 +69,40 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    const getDate = () => {
+      setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+      const now = new Date();
+
+      const all = now.toLocaleString("default", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        timeZone: timeZone,
+      });
+
+      setDate(all);
+    };
+
     getDate();
   }, [timeZone]);
 
   useEffect(() => {
+    //TODO bookmark cities?
+    const getCity = async () => {
+      try {
+        const { lat, lng } = coords;
+        const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        setCityName(data.city);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     getCity();
   }, [coords]);
 
@@ -81,6 +111,7 @@ const App = () => {
     notForCity: false,
   };
 
+  //FIXME isn't this an issue
   useEffect(() => {
     console.log("coords changed so i can fetch weather data");
 
@@ -108,21 +139,6 @@ const App = () => {
     }
   };
 
-  const getDate = () => {
-    setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
-
-    const now = new Date();
-
-    const all = now.toLocaleString("default", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      timeZone: timeZone,
-    });
-
-    setDate(all);
-  };
-
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -140,10 +156,13 @@ const App = () => {
     // array
     setHourlyWeather(data.hourly);
 
-    setLoading(!loading);
+    //FIXME thats bad if u think for more than one nanosecond
+    setLoading(false);
   };
 
   const getWeather = async (fromSearch: boolean) => {
+    setLoading(true);
+
     try {
       const { lat, lng } = fromSearch ? cityCoords : coords;
 
@@ -160,21 +179,6 @@ const App = () => {
     } catch (err) {
       //TODO error msg
       console.log(err, "error fetching WEATHER data");
-    }
-  };
-
-  //TODO bookmark cities?
-  const getCity = async () => {
-    try {
-      const { lat, lng } = coords;
-      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      setCityName(data.city);
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -254,7 +258,9 @@ const App = () => {
             {/* ------------------------ */}
             {/* ------------------------ */}
             {/* ------------------------ */}
-            {hourlyWeather && <TabList weatherArray={hourlyWeather} />}
+            {hourlyWeather && (
+              <TabList weatherArray={hourlyWeather} timeZone={timeZone} />
+            )}
 
             <Search handleSearch={handleSearch} />
           </main>

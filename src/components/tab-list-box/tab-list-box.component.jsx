@@ -5,51 +5,44 @@ import Image from "../image/image.component";
 import "./tab-list-box.styles.scss";
 
 // , selectedBox, onBoxClickHandler
-const TabListBox = ({ box, id }) => {
+//FIXME don't prop drill timeZone
+const TabListBox = ({ box, id, timeZone }) => {
   const { temp } = box;
   const iconCode = box.weather[0].icon;
 
-  const [currentHour, setCurrentHour] = useState(null);
   const [displayHour, setDisplayHour] = useState(null);
 
-  // console.log()
-
-  //TODO time
-  const addZeroToHours = (number) => {
-    if (number < 10) {
-      number = "0" + number;
-      return number;
-    } else return number;
-  };
-
   const addHourById = (number, id) => {
+    //24 is 0 in js
     if (number < 24) {
       const theNumber = number + id;
 
       if (theNumber < 24) {
         return theNumber;
       } else if (theNumber >= 24) {
-        return id - 10;
+        return theNumber - 24;
       }
     } else return id - 10;
   };
 
-  const getHour = () => {
-    const now = new Date();
-
-    const hour = addZeroToHours(now.getHours());
-    const time = hour + ":00";
-    //24 is 0 in js
-    const hourById = addHourById(now.getHours(), id);
-    const timeById = addZeroToHours(hourById) + ":00";
-    // console.log("hourById: ", hourById);
-    // console.log("timeById: ", timeById);
-
-    setCurrentHour(time);
-    setDisplayHour(timeById);
-  };
-
   useEffect(() => {
+    const getHour = () => {
+      const now = new Date();
+      const hour = parseInt(
+        now.toLocaleTimeString([], {
+          hour: "2-digit",
+
+          timeZone: timeZone,
+          hour12: false,
+        })
+      );
+
+      const hourById = addHourById(hour, id);
+      const timeById = hourById + ":00";
+
+      setDisplayHour(timeById);
+    };
+
     getHour();
   }, []);
 
@@ -73,13 +66,6 @@ const TabListBox = ({ box, id }) => {
 
 export default TabListBox;
 
-// there can be only one active,
-// it's either the current hour
-// or the one user clicks on
-//onClick={onBoxClickHandler}
-
-//maybe don't let select them?
-//TODO make current hour active by default
 /*
  <div
       key={box}

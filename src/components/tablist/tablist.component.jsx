@@ -1,21 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import TabListBox from "../tab-list-box/tab-list-box.component";
 
 import "./tablist.styles.scss";
 
-const TabList = ({ weatherArray }) => {
-  const [scrollRight, setScrollRight] = useState(false);
+const TabList = ({ weatherArray, timeZone }) => {
+  const [leftIsScrollable, setLeftIsScrollable] = useState(false);
+  const [rightIsScrollable, setRightIsScrollable] = useState(true);
 
-  const boxesNumber2 = 19;
-  const shorterWeatherArray = weatherArray.slice(0, boxesNumber2);
+  const HOUR_BOXES_NUMBER = 17;
+  const shorterWeatherArray = weatherArray.slice(0, HOUR_BOXES_NUMBER);
+
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const carouselLenght = 5;
+
+  const styles = { transform: `translateX(${carouselIndex * -68}%)` };
+  // console.log("carouselIndex ", carouselIndex);
+  // console.log("styles ", styles);
 
   const scrollHanlderLeft = () => {
-    if (scrollRight) setScrollRight(!scrollRight);
+    if (carouselIndex === 0) {
+      // do nothing
+      // setCarouselIndex(carouselLenght);
+    } else if (carouselIndex > 0) {
+      setCarouselIndex(carouselIndex - 1);
+    }
   };
   const scrollHanlderRight = () => {
-    setScrollRight(!scrollRight);
+    if (carouselIndex === carouselLenght) {
+      // do nothing
+      // setCarouselIndex(0);
+    } else if (carouselIndex >= 0) {
+      setCarouselIndex(carouselIndex + 1);
+    }
   };
+
+  useEffect(() => {
+    if (carouselIndex > 0) {
+      setLeftIsScrollable(true);
+    } else {
+      setLeftIsScrollable(false);
+    }
+
+    if (carouselIndex === carouselLenght) {
+      setRightIsScrollable(false);
+    } else {
+      setRightIsScrollable(true);
+    }
+  }, [carouselIndex]);
 
   return (
     <div className="tablist--container">
@@ -47,24 +79,27 @@ const TabList = ({ weatherArray }) => {
       </div>
 
       <div className="tab-panel" id="hourly-tab" role="tabpanel">
-        <div
-          //${scrollLeft ? "scroll--left" : ""}
-          className={`tab-trail  ${scrollRight ? "scroll--right" : ""}`}
-        >
-          {/* map not forEach lol  */}
+        {/* BOXES  */}
+        <div className={`tab-trail`} style={styles}>
           {shorterWeatherArray.map((box, id) => (
-            <TabListBox box={box} key={id} id={id} />
+            <TabListBox box={box} key={id} id={id} timeZone={timeZone} />
           ))}
         </div>
+
+        {/* --- BUTTONS --- */}
         <button
           onClick={scrollHanlderLeft}
-          className="tab-panel__scroll tab-panel__scroll--left glass"
+          className={`tab-panel__scroll tab-panel__scroll--left glass ${
+            leftIsScrollable ? "active" : ""
+          }`}
         >
           &#60;
         </button>
         <button
           onClick={scrollHanlderRight}
-          className="tab-panel__scroll tab-panel__scroll--right glass"
+          className={`tab-panel__scroll tab-panel__scroll--right glass ${
+            rightIsScrollable ? "active" : ""
+          }`}
         >
           &#62;
         </button>
