@@ -4,10 +4,17 @@ import searchTool from "../../images/image-search-tool.svg";
 
 import "./search.styles.scss";
 
-const Search = ({ handleSearch }) => {
+type SearchProps = {
+  handleSearch: (
+    e: React.FormEvent<HTMLFormElement>,
+    textValue: string
+  ) => void;
+};
+
+const Search = ({ handleSearch }: SearchProps) => {
   const [textValue, setTextValue] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
 
     setTextValue(value);

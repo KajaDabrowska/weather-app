@@ -10,6 +10,8 @@ import dropImage from "./images/image-drop.svg";
 import windImage from "./images/image-wind.svg";
 import cloudImage from "./images/image-cloud.svg";
 
+import { WeatherOneHour } from "./components/hourly-box/hourly-box.component";
+
 import "./App.scss";
 
 //{ latitude: lat, longitude: lng }
@@ -18,12 +20,34 @@ export type Coords = {
   lng: number | null;
 };
 
+export type WeatherOneDay = {
+  temp: { max: number };
+  weather: [{ main: string; icon: string }];
+  // weather: [{ description: string; icon: string }];
+};
+
+type Data = {
+  hourly: WeatherOneHour[];
+  daily: WeatherOneDay[];
+  timezone: string;
+  current: {
+    temp: number;
+    weather: [
+      {
+        description: string;
+        icon: string;
+      }
+    ];
+    wind_speed: number;
+    humidity: number;
+    clouds: number;
+  };
+};
+
 // const API_KEY = "47ecb06584efcd3a09d06d7e70fd2cb8";
 const API_KEY = "3585e187fe2dcd51bd3ecd35186e4637";
 // units for API call
 const UNITS = "metric";
-// number of timestamp responses in hourly forecast
-const CNT = 24;
 // what to exclude from API call, divided by ","
 const EXCLUDE = "minutely,alerts";
 
@@ -47,16 +71,22 @@ const App = () => {
   const [timeZone, setTimezone] = useState("UTC");
   const [date, setDate] = useState("null");
   // NOW
-  const [nowTemp, setNowTemp] = useState("null");
-  const [nowDesc, setNowDesc] = useState("null");
-  const [nowIcon, setNowIcon] = useState("null");
+  const [nowTemp, setNowTemp] = useState<string | number>("null");
+  const [nowDesc, setNowDesc] = useState<string | number>("null");
+  const [nowIcon, setNowIcon] = useState<string | null>(null);
 
-  const [nowHumid, setNowHumid] = useState("null");
-  const [nowWind, setNowWind] = useState("null");
-  const [nowClouds, setNowClouds] = useState("null");
+  const [nowHumid, setNowHumid] = useState<string | number>("null");
+  const [nowWind, setNowWind] = useState<string | number>("null");
+  const [nowClouds, setNowClouds] = useState<string | number>("null");
   // HOURLY
-  const [hourlyWeather, setHourlyWeather] = useState(null);
-
+  const [hourlyWeather, setHourlyWeather] = useState<null | WeatherOneHour[]>(
+    null
+  );
+  // HOURLY
+  const [dailyWeather, setDailyWeather] = useState<null | WeatherOneDay[]>(
+    null
+  );
+  // console.log(dailyWeather);
   //TODO error msg if geolocation not available
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -68,7 +98,10 @@ const App = () => {
     }
   }, []);
 
+  //FIXME goes off twice after location change and changes back to the previous (my lord why?)
+  // maybe coords from location goess off too?
   useEffect(() => {
+    console.log("timeZone APP JS -------------", timeZone);
     const getDate = () => {
       setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
@@ -143,8 +176,8 @@ const App = () => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  //@ts-ignore
-  const setWeatherVariables = (data) => {
+  const setWeatherVariables = (data: Data) => {
+    // console.log(data);
     setNowTemp(data.current.temp);
     setNowDesc(data.current.weather[0].description);
     setNowIcon(data.current.weather[0].icon);
@@ -155,6 +188,7 @@ const App = () => {
 
     // array
     setHourlyWeather(data.hourly);
+    setDailyWeather(data.daily);
 
     //FIXME thats bad if u think for more than one nanosecond
     setLoading(false);
@@ -199,8 +233,10 @@ const App = () => {
     }
   };
 
-  //@ts-ignore
-  const handleSearch = (e, textValue) => {
+  const handleSearch = (
+    e: React.FormEvent<HTMLFormElement>,
+    textValue: string
+  ) => {
     e.preventDefault();
 
     setSearchCityName(textValue);
@@ -208,7 +244,7 @@ const App = () => {
 
   return (
     <Fragment>
-      {/*TODO add LOADING COMPONENT  */}
+      {/*TODO add LOADING COMPONENT */}
       {loading === false ? (
         <div className="container">
           <header className="header--container ">
@@ -231,6 +267,7 @@ const App = () => {
                       <span className="celcius__c">c</span>
                     </sup>
                   </div>
+                  {/*@ts-ignore  */}
                   <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
                 </div>
 
@@ -258,8 +295,12 @@ const App = () => {
             {/* ------------------------ */}
             {/* ------------------------ */}
             {/* ------------------------ */}
-            {hourlyWeather && (
-              <TabList weatherArray={hourlyWeather} timeZone={timeZone} />
+            {hourlyWeather && dailyWeather && (
+              <TabList
+                hourlyWeather={hourlyWeather}
+                dailyWeather={dailyWeather}
+                timeZone={timeZone}
+              />
             )}
 
             <Search handleSearch={handleSearch} />

@@ -1,19 +1,32 @@
 import { useEffect, useState } from "react";
 
-import TabListBox from "../tab-list-box/tab-list-box.component";
+import HourlyBox from "../hourly-box/hourly-box.component";
+import DailyBox from "../daily-box/daily-box.component";
 
 import "./tablist.styles.scss";
 
-const TabList = ({ weatherArray, timeZone }) => {
+import { WeatherOneHour } from "../hourly-box/hourly-box.component";
+import { WeatherOneDay } from "../../App";
+
+type TabListProps = {
+  hourlyWeather: WeatherOneHour[];
+  dailyWeather: WeatherOneDay[];
+  timeZone: string;
+};
+
+const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
   const [leftIsScrollable, setLeftIsScrollable] = useState(false);
   const [rightIsScrollable, setRightIsScrollable] = useState(true);
 
+  const [dailyTabActive, setDailyTabActive] = useState(false);
+
   const HOUR_BOXES_NUMBER = 17;
-  const shorterWeatherArray = weatherArray.slice(0, HOUR_BOXES_NUMBER);
+  const shorterWeatherArray = hourlyWeather.slice(0, HOUR_BOXES_NUMBER);
 
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselLenght = 5;
 
+  //TODO make this translate value depend on the daily or hourly tab
   const styles = { transform: `translateX(${carouselIndex * -68}%)` };
   // console.log("carouselIndex ", carouselIndex);
   // console.log("styles ", styles);
@@ -33,6 +46,13 @@ const TabList = ({ weatherArray, timeZone }) => {
     } else if (carouselIndex >= 0) {
       setCarouselIndex(carouselIndex + 1);
     }
+  };
+
+  const changePanelToDaily = () => {
+    setDailyTabActive(true);
+  };
+  const changePanelToHourly = () => {
+    setDailyTabActive(false);
   };
 
   useEffect(() => {
@@ -57,33 +77,40 @@ const TabList = ({ weatherArray, timeZone }) => {
         aria-label="Weather sorted by time list"
       >
         <button
-          className="btn active"
+          onClick={changePanelToHourly}
+          className={`btn ${!dailyTabActive ? "active" : ""}`}
           role="tab"
           aria-controls="hourly-tab"
-          aria-selected={true}
-          // @ts-ignore
-          tabIndex="0"
+          aria-selected={!dailyTabActive}
+          // tabIndex={0}
         >
           Hourly
         </button>
         <button
-          className="btn"
+          onClick={changePanelToDaily}
+          className={`btn ${dailyTabActive ? "active" : ""}`}
           role="tab"
           aria-controls="daily-tab"
-          aria-selected={false}
-          // @ts-ignore
-          tabIndex="-1"
+          aria-selected={dailyTabActive}
+          // tabIndex={-1}
         >
           Daily &#62;
         </button>
       </div>
-
+      {/* {shorterWeatherArray.map((box, id) => (
+            // <HourlyBox box={box} key={id} id={id} timeZone={timeZone} />
+            <DailyBox box={box} key={id} id={id} timeZone={timeZone} />
+          ))} */}
       <div className="tab-panel" id="hourly-tab" role="tabpanel">
         {/* BOXES  */}
         <div className={`tab-trail`} style={styles}>
-          {shorterWeatherArray.map((box, id) => (
-            <TabListBox box={box} key={id} id={id} timeZone={timeZone} />
-          ))}
+          {dailyTabActive
+            ? dailyWeather.map((box, id) => (
+                <DailyBox box={box} key={id} id={id} timeZone={timeZone} />
+              ))
+            : shorterWeatherArray.map((box, id) => (
+                <HourlyBox box={box} key={id} id={id} timeZone={timeZone} />
+              ))}
         </div>
 
         {/* --- BUTTONS --- */}

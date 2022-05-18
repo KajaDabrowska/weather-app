@@ -2,17 +2,28 @@ import { useEffect, useState } from "react";
 
 import Image from "../image/image.component";
 
-import "./tab-list-box.styles.scss";
+import "./hourly-box.styles.scss";
 
 // , selectedBox, onBoxClickHandler
 //FIXME don't prop drill timeZone
-const TabListBox = ({ box, id, timeZone }) => {
+export type WeatherOneHour = {
+  temp: number;
+  weather: [{ icon: string }];
+};
+
+type HourlyBoxProps = {
+  box: WeatherOneHour;
+  id: number;
+  timeZone: string;
+};
+
+const HourlyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
   const { temp } = box;
   const iconCode = box.weather[0].icon;
 
-  const [displayHour, setDisplayHour] = useState(null);
+  const [displayHour, setDisplayHour] = useState<null | string>(null);
 
-  const addHourById = (number, id) => {
+  const addHourById = (number: number, id: number) => {
     //24 is 0 in js
     if (number < 24) {
       const theNumber = number + id;
@@ -50,11 +61,11 @@ const TabListBox = ({ box, id, timeZone }) => {
     <div className={`tab-panel__box ${id === 0 && "active"}`}>
       <div className="time  shadow">{displayHour}</div>
 
+      {/*@ts-ignore  */}
       <Image imageCode={iconCode} size={"small"} />
 
       <div className="temp shadow">
-        {/*@ts-ignore  */}
-        {temp !== "null" ? Math.trunc(temp) : temp}
+        {Math.trunc(temp)}
         <sup className="celcius">
           <span className="celcius__degree">°</span>
           <span className="celcius__c">c</span>
@@ -64,7 +75,7 @@ const TabListBox = ({ box, id, timeZone }) => {
   );
 };
 
-export default TabListBox;
+export default HourlyBox;
 
 /*
  <div
