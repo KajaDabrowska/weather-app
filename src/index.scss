@@ -153,7 +153,8 @@ select {
 
 .container {
   max-width: 32rem;
-  height: min(67.5rem, 100vh);
+  // height: min(67.5rem, 100vh);
+  height: 100%;
   border: 2px solid hsl(var(--clr-white));
   border-radius: 1rem;
   padding: 1.5rem 2rem;

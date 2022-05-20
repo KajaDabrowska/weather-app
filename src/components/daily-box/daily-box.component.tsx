@@ -26,35 +26,77 @@ const DailyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
 
   const addidtionalIconStyle = iconCode === "01d" ? "sun-make-smaller" : "";
 
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getDisplayDayNum = (dayNum: number, daysInMonth: number) => {
+    // console.log("day today", dayNum);
+    if (dayNum + id < daysInMonth) {
+      // console.log("AAA day with id", dayNum + id);
+      return dayNum + id;
+    } else {
+      // console.log("BBB day with id", daysInMonth - (dayNum + id));
+      return daysInMonth - (dayNum + id);
+    }
+  };
+
+  const getDisplayDayString = (weekday: string) => {
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const numberOfDay = daysOfWeek.indexOf(weekday);
+
+    if (numberOfDay + id <= 6) {
+      return daysOfWeek[numberOfDay + id];
+    } else {
+      return daysOfWeek[numberOfDay + id - 7];
+    }
+  };
+
   useEffect(() => {
-    const getHour = () => {
+    const getDate = () => {
       const now = new Date();
-      const date = now.toLocaleTimeString([], {
-        day: "numeric",
-        month: "numeric",
-        year: "numeric",
+      const day = parseInt(
+        now.toLocaleString("default", {
+          day: "numeric",
+          timeZone: timeZone,
+        })
+      );
+      const weekday = now.toLocaleString("default", {
+        weekday: "short",
         timeZone: timeZone,
       });
-      console.log("timeZone", timeZone);
-      console.log("date", date);
-      // const hourById = addHourById(hour, id);
-      // const timeById = hourById + ":00";
 
-      // setDisplayHour(timeById);
+      const month = parseInt(
+        now.toLocaleString("default", {
+          year: "numeric",
+          timeZone: timeZone,
+        })
+      );
+      const year = parseInt(
+        now.toLocaleString("default", {
+          month: "numeric",
+          timeZone: timeZone,
+        })
+      );
+      const daysInMonth = getDaysInMonth(month, year);
+
+      setDayNum(getDisplayDayNum(day, daysInMonth));
+      setDayString(getDisplayDayString(weekday));
     };
-
-    getHour();
-  }, [timeZone]);
+    getDate();
+  }, []);
 
   return (
     <div className={`tab-box-day ${id === 0 ? "active" : ""}`}>
-      <p className="tab-box-day__date">Sun 30</p>
+      <p className="tab-box-day__date">
+        {dayString} {dayNum}
+      </p>
+      {/* <p className="tab-box-day__date">Sun 30</p> */}
       <div className={`tab-box-day__img ${addidtionalIconStyle}`}>
-        {/*@ts-ignore */}
         <Image imageCode={iconCode} size={"medium"} />
       </div>
       <p className="tab-box-day__temp temp">
-        {temp}
+        {Math.trunc(temp)}
         <sup className="celcius">
           <span className="celcius__degree">°</span>
           <span className="celcius__c">c</span>
@@ -66,33 +108,3 @@ const DailyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
 };
 
 export default DailyBox;
-
-/*
-<div className={`tab-panel__box ${id === 0 && "active"}`}>
-      <div className="time  shadow">{}</div>
-
-      
-      <Image imageCode={iconCode} size={"small"} />
-
-      <div className="temp shadow">
-        {Math.trunc(temp)}
-        <sup className="celcius">
-          <span className="celcius__degree">°</span>
-          <span className="celcius__c">c</span>
-        </sup>
-      </div>
-    </div>
-*/
-/*
- <div
-      key={box}
-      className={`tab-panel__box ${box === selectedBox ? "active" : ""}`}
-      //   onClick={() => onBoxClickHandler(box)}
-    >
-      <div className="time  shadow">09:00</div>
-      <div className="img shadow">image</div>
-      <div className="temp shadow">
-        2°<sup>C</sup>
-      </div>
-    </div>
-*/

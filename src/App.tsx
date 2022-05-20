@@ -86,7 +86,8 @@ const App = () => {
   const [dailyWeather, setDailyWeather] = useState<null | WeatherOneDay[]>(
     null
   );
-  // console.log(dailyWeather);
+  // console.log("COORDS: ==>", coords);
+
   //TODO error msg if geolocation not available
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -98,11 +99,12 @@ const App = () => {
     }
   }, []);
 
-  //FIXME goes off twice after location change and changes back to the previous (my lord why?)
-  // maybe coords from location goess off too?
+  /* ---------------------------- */
+  /* -- SET TIMEZONE AND DATE -- */
+  /* -------------------------- */
   useEffect(() => {
-    console.log("timeZone APP JS -------------", timeZone);
-    const getDate = () => {
+    // console.log("timeZone APP JS -------------", timeZone);
+    const getDateAndTimeZone = () => {
       setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
       const now = new Date();
@@ -117,10 +119,33 @@ const App = () => {
       setDate(all);
     };
 
+    getDateAndTimeZone();
+  }, []);
+  /* ---------------------------- */
+  /* -----  SET DATE  ------ */
+  /* -------------------------- */
+  useEffect(() => {
+    // console.log("i set time after timeZone changes -------------", timeZone);
+    const getDate = () => {
+      const now = new Date();
+      const all = now.toLocaleString("default", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        timeZone: timeZone,
+      });
+
+      setDate(all);
+    };
+
     getDate();
   }, [timeZone]);
 
+  /* -------------------------- */
+  /* ------  GET CITY   ------- */
+  /* -------------------------- */
   useEffect(() => {
+    // console.log("i get city cuz coords changed");
     //TODO bookmark cities?
     const getCity = async () => {
       try {
@@ -144,9 +169,12 @@ const App = () => {
     notForCity: false,
   };
 
+  /* --------------------------- */
+  /* ------  GET WEATHER ------- */
+  /* --------------------------- */
   //FIXME isn't this an issue
   useEffect(() => {
-    console.log("coords changed so i can fetch weather data");
+    // console.log("coords changed so i can fetch weather data");
 
     getWeather(forSearchedCity.notForCity);
   }, [coords]);
@@ -184,7 +212,7 @@ const App = () => {
     setNowWind(data.current.wind_speed);
     setNowHumid(data.current.humidity);
     setNowClouds(data.current.clouds);
-    setTimezone(data.timezone);
+    setTimezone(data.timezone); //TIMEZONE //FIXME
 
     // array
     setHourlyWeather(data.hourly);

@@ -26,10 +26,15 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselLenght = 5;
 
-  //TODO make this translate value depend on the daily or hourly tab
-  const styles = { transform: `translateX(${carouselIndex * -68}%)` };
-  // console.log("carouselIndex ", carouselIndex);
-  // console.log("styles ", styles);
+  const translateValueForHourly = -68;
+  const translateValueForDaily = -46;
+  const translateValue = dailyTabActive
+    ? translateValueForDaily
+    : translateValueForHourly;
+
+  const styles = {
+    transform: `translateX(${carouselIndex * translateValue}%)`,
+  };
 
   const scrollHanlderLeft = () => {
     if (carouselIndex === 0) {
@@ -76,6 +81,7 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
         role="tablist"
         aria-label="Weather sorted by time list"
       >
+        {/* HOUR/DAILY BUTTONS */}
         <button
           onClick={changePanelToHourly}
           className={`btn ${!dailyTabActive ? "active" : ""}`}
@@ -84,7 +90,7 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
           aria-selected={!dailyTabActive}
           // tabIndex={0}
         >
-          Hourly
+          {dailyTabActive ? `<` : ""} Hourly
         </button>
         <button
           onClick={changePanelToDaily}
@@ -94,13 +100,11 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
           aria-selected={dailyTabActive}
           // tabIndex={-1}
         >
-          Daily &#62;
+          Daily {!dailyTabActive ? `>` : ""}
         </button>
       </div>
-      {/* {shorterWeatherArray.map((box, id) => (
-            // <HourlyBox box={box} key={id} id={id} timeZone={timeZone} />
-            <DailyBox box={box} key={id} id={id} timeZone={timeZone} />
-          ))} */}
+
+      {/* --- TAB PANEL --- */}
       <div className="tab-panel" id="hourly-tab" role="tabpanel">
         {/* BOXES  */}
         <div className={`tab-trail`} style={styles}>
@@ -121,6 +125,7 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
           }`}
         >
           &#60;
+          <div className="sr-only">Scroll weather boxes left</div>
         </button>
         <button
           onClick={scrollHanlderRight}
@@ -128,6 +133,7 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
             rightIsScrollable ? "active" : ""
           }`}
         >
+          <div className="sr-only">Scroll weather boxes right</div>
           &#62;
         </button>
       </div>

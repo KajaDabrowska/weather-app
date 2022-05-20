@@ -23,17 +23,15 @@ const HourlyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
 
   const [displayHour, setDisplayHour] = useState<null | string>(null);
 
-  const addHourById = (number: number, id: number) => {
-    //24 is 0 in js
-    if (number < 24) {
-      const theNumber = number + id;
+  const addHourById = (hour: number) => {
+    //24 is 24 in js (not 0)
+    const theNumber = hour + id;
 
-      if (theNumber < 24) {
-        return theNumber;
-      } else if (theNumber >= 24) {
-        return theNumber - 24;
-      }
-    } else return id - 10;
+    if (theNumber < 24) {
+      return theNumber;
+    } else if (theNumber >= 24) {
+      return theNumber - 24;
+    }
   };
 
   useEffect(() => {
@@ -48,7 +46,7 @@ const HourlyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
         })
       );
 
-      const hourById = addHourById(hour, id);
+      const hourById = addHourById(hour);
       const timeById = hourById + ":00";
 
       setDisplayHour(timeById);
