@@ -6,15 +6,14 @@ import DailyBox from "../daily-box/daily-box.component";
 import "./tablist.styles.scss";
 
 import { WeatherOneHour } from "../hourly-box/hourly-box.component";
-import { WeatherOneDay } from "../../App";
+import { WeatherOneDay } from "../daily-box/daily-box.component";
 
 type TabListProps = {
   hourlyWeather: WeatherOneHour[];
   dailyWeather: WeatherOneDay[];
-  timeZone: string;
 };
 
-const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
+const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
   const [leftIsScrollable, setLeftIsScrollable] = useState(false);
   const [rightIsScrollable, setRightIsScrollable] = useState(true);
 
@@ -26,8 +25,8 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselLenght = 5;
 
-  const translateValueForHourly = -68;
-  const translateValueForDaily = -46;
+  const translateValueForHourly = -67;
+  const translateValueForDaily = -51;
   const translateValue = dailyTabActive
     ? translateValueForDaily
     : translateValueForHourly;
@@ -54,9 +53,11 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
   };
 
   const changePanelToDaily = () => {
+    setCarouselIndex(0);
     setDailyTabActive(true);
   };
   const changePanelToHourly = () => {
+    setCarouselIndex(0);
     setDailyTabActive(false);
   };
 
@@ -110,10 +111,10 @@ const TabList = ({ hourlyWeather, dailyWeather, timeZone }: TabListProps) => {
         <div className={`tab-trail`} style={styles}>
           {dailyTabActive
             ? dailyWeather.map((box, id) => (
-                <DailyBox box={box} key={id} id={id} timeZone={timeZone} />
+                <DailyBox box={box} key={id} id={id} />
               ))
             : shorterWeatherArray.map((box, id) => (
-                <HourlyBox box={box} key={id} id={id} timeZone={timeZone} />
+                <HourlyBox box={box} key={id} id={id} />
               ))}
         </div>
 

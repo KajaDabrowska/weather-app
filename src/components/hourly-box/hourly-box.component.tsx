@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+
+import { TimeZoneContext } from "../../contexts/timeZone-context";
 
 import Image from "../image/image.component";
 
 import "./hourly-box.styles.scss";
 
-// , selectedBox, onBoxClickHandler
-//FIXME don't prop drill timeZone
 export type WeatherOneHour = {
   temp: number;
   weather: [{ icon: string }];
@@ -14,14 +14,15 @@ export type WeatherOneHour = {
 type HourlyBoxProps = {
   box: WeatherOneHour;
   id: number;
-  timeZone: string;
 };
 
-const HourlyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
+const HourlyBox = ({ box, id }: HourlyBoxProps) => {
   const { temp } = box;
   const iconCode = box.weather[0].icon;
 
   const [displayHour, setDisplayHour] = useState<null | string>(null);
+
+  const { timeZone } = useContext(TimeZoneContext);
 
   const addHourById = (hour: number) => {
     //24 is 24 in js (not 0)
@@ -59,7 +60,6 @@ const HourlyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
     <div className={`tab-panel__box ${id === 0 && "active"}`}>
       <div className="time  shadow">{displayHour}</div>
 
-      {/*@ts-ignore  */}
       <Image imageCode={iconCode} size={"small"} />
 
       <div className="temp shadow">

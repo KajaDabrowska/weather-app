@@ -1,29 +1,25 @@
 import { Fragment } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
-import Image from "./components/image/image.component";
 import TabList from "./components/tablist/tablist.component";
 import Search from "./components/search/search.component";
 import LoadingSpinner from "./components/loadingSpinner/loading-spinner.component";
-
-import dropImage from "./images/image-drop.svg";
-import windImage from "./images/image-wind.svg";
-import cloudImage from "./images/image-cloud.svg";
+import Header from "./components/header/header.component";
+import MainDisplay, {
+  NowWeather,
+} from "./components/main-display/main-display.component";
 
 import { WeatherOneHour } from "./components/hourly-box/hourly-box.component";
+import { WeatherOneDay } from "./components/daily-box/daily-box.component";
 
-import "./App.scss";
+import { TimeZoneContext } from "./contexts/timeZone-context";
+
+// import "./App.scss";
 
 //{ latitude: lat, longitude: lng }
 export type Coords = {
   lat: number | null;
   lng: number | null;
-};
-
-export type WeatherOneDay = {
-  temp: { max: number };
-  weather: [{ main: string; icon: string }];
-  // weather: [{ description: string; icon: string }];
 };
 
 type Data = {
@@ -44,49 +40,58 @@ type Data = {
   };
 };
 
-// const API_KEY = "47ecb06584efcd3a09d06d7e70fd2cb8";
 const API_KEY = "3585e187fe2dcd51bd3ecd35186e4637";
 // units for API call
 const UNITS = "metric";
 // what to exclude from API call, divided by ","
 const EXCLUDE = "minutely,alerts";
 
-//TODO initial city if someone doesn't let geolocate themselves?
 //TODO loading message?
 const App = () => {
   const [loading, setLoading] = useState(true);
 
-  const [coords, setCoords] = useState<Coords>({ lat: null, lng: null });
+  const [coords, setCoords] = useState<Coords>({ lat: 52.2297, lng: 21.0122 });
   const [cityCoords, setCityCoords] = useState<Coords>({
     lat: null,
     lng: null,
   });
-  // console.log(cityCoords);
 
-  //TODO only one cityName variable?
-  const [cityName, setCityName] = useState<string | null>(null);
+  const [cityName, setCityName] = useState("Warsaw");
   const [searchCityName, setSearchCityName] = useState<string | null>(null);
 
   //TIMEZONE for searched cities
-  const [timeZone, setTimezone] = useState("UTC");
-  const [date, setDate] = useState("null");
-  // NOW
-  const [nowTemp, setNowTemp] = useState<string | number>("null");
-  const [nowDesc, setNowDesc] = useState<string | number>("null");
-  const [nowIcon, setNowIcon] = useState<string | null>(null);
+  const { timeZone, setTimezone } = useContext(TimeZoneContext);
 
-  const [nowHumid, setNowHumid] = useState<string | number>("null");
-  const [nowWind, setNowWind] = useState<string | number>("null");
-  const [nowClouds, setNowClouds] = useState<string | number>("null");
+  const [date, setDate] = useState("Tue, May 24");
+
+  // NOW
+  const [nowTemp, setNowTemp] = useState(17.45);
+  const [nowDesc, setNowDesc] = useState("clear sky");
+  const [nowIcon, setNowIcon] = useState("01d");
+
+  const [nowHumid, setNowHumid] = useState(57);
+  const [nowWind, setNowWind] = useState(6);
+  const [nowClouds, setNowClouds] = useState(0);
+
+  const nowWeather: NowWeather = {
+    nowTemp: nowTemp,
+    nowDesc: nowDesc,
+    nowIcon: nowIcon,
+
+    nowHumid: nowHumid,
+    nowWind: nowWind,
+    nowClouds: nowClouds,
+  };
+
   // HOURLY
   const [hourlyWeather, setHourlyWeather] = useState<null | WeatherOneHour[]>(
     null
   );
-  // HOURLY
+
+  // DAILY
   const [dailyWeather, setDailyWeather] = useState<null | WeatherOneDay[]>(
     null
   );
-  // console.log("COORDS: ==>", coords);
 
   //TODO error msg if geolocation not available
   useEffect(() => {
@@ -95,7 +100,7 @@ const App = () => {
 
       getPosition();
     } else {
-      console.log("Not Available");
+      console.log("Geolocation Not Available");
     }
   }, []);
 
@@ -121,6 +126,7 @@ const App = () => {
 
     getDateAndTimeZone();
   }, []);
+
   /* ---------------------------- */
   /* -----  SET DATE  ------ */
   /* -------------------------- */
@@ -172,7 +178,7 @@ const App = () => {
   /* --------------------------- */
   /* ------  GET WEATHER ------- */
   /* --------------------------- */
-  //FIXME isn't this an issue
+
   useEffect(() => {
     // console.log("coords changed so i can fetch weather data");
 
@@ -200,10 +206,6 @@ const App = () => {
     }
   };
 
-  const capitalizeFirstLetter = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-
   const setWeatherVariables = (data: Data) => {
     // console.log(data);
     setNowTemp(data.current.temp);
@@ -212,13 +214,13 @@ const App = () => {
     setNowWind(data.current.wind_speed);
     setNowHumid(data.current.humidity);
     setNowClouds(data.current.clouds);
-    setTimezone(data.timezone); //TIMEZONE //FIXME
+    setTimezone(data.timezone);
 
     // array
     setHourlyWeather(data.hourly);
     setDailyWeather(data.daily);
 
-    //FIXME thats bad if u think for more than one nanosecond
+    //FIXME thats bad?
     setLoading(false);
   };
 
@@ -275,59 +277,19 @@ const App = () => {
       {/*TODO add LOADING COMPONENT */}
       {loading === false ? (
         <div className="container">
-          <header className="header--container ">
-            <h1 className="city">
-              {searchCityName ? searchCityName : cityName}
-            </h1>
-            <p className="date">{date}</p>
-          </header>
+          <Header
+            cityName={cityName}
+            searchCityName={searchCityName}
+            date={date}
+          />
 
-          <main className="">
-            <div className="main--container glass">
-              <div className="big--container ">
-                <div className="tempDesc">
-                  <div className="temp shadow">
-                    {/*TODO Math.trunc  */}
-                    {/*@ts-ignore  */}
-                    {nowTemp !== "null" ? Math.trunc(nowTemp) : nowTemp}
-                    <sup className="celcius">
-                      <span className="celcius__degree">°</span>
-                      <span className="celcius__c">c</span>
-                    </sup>
-                  </div>
-                  {/*@ts-ignore  */}
-                  <div className="desc">{capitalizeFirstLetter(nowDesc)}</div>
-                </div>
+          <main>
+            <MainDisplay nowWeather={nowWeather} />
 
-                {/*@ts-ignore  */}
-                <Image imageCode={nowIcon ? nowIcon : null} size={"big"} />
-              </div>
-              <div className="small--container">
-                <div className="details">
-                  <img src={windImage} alt="" className="image shadow" />
-                  {/*@ts-ignore  */}
-                  <p>{Math.trunc(nowWind)} km/h</p>
-                </div>
-
-                <div className="details details__humid">
-                  <img src={dropImage} alt="" className="image shadow" />
-                  <p>{nowHumid}%</p>
-                </div>
-
-                <div className="details">
-                  <img src={cloudImage} alt="" className="image shadow" />
-                  <p>{nowClouds}%</p>
-                </div>
-              </div>
-            </div>
-            {/* ------------------------ */}
-            {/* ------------------------ */}
-            {/* ------------------------ */}
             {hourlyWeather && dailyWeather && (
               <TabList
                 hourlyWeather={hourlyWeather}
                 dailyWeather={dailyWeather}
-                timeZone={timeZone}
               />
             )}
 

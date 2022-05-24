@@ -24,7 +24,9 @@ type ImagesObject = {
 
 const Image = ({ imageCode, size }: ImageComponentTypes) => {
   const [sizeClass, setSizeClass] = useState("image--big");
+  const [additionalStyles, setAdditionalStyles] = useState("");
 
+  // SIZE STYLES
   useEffect(() => {
     if (size === "big") {
       setSizeClass("image--big");
@@ -32,6 +34,15 @@ const Image = ({ imageCode, size }: ImageComponentTypes) => {
       setSizeClass("image--medium");
     } else if (size === "small") {
       setSizeClass("image--small");
+    }
+  }, []);
+
+  // FIX ICON SIZE DIFFERENCES
+  useEffect(() => {
+    if (imageCode === "01d" || imageCode === "01n") {
+      setAdditionalStyles("fix-make-bigger");
+    } else if (imageCode === "02d" || imageCode === "02n") {
+      setAdditionalStyles("fix-move-down");
     }
   }, []);
 
@@ -60,9 +71,13 @@ const Image = ({ imageCode, size }: ImageComponentTypes) => {
 
   const image = images[imageCode];
 
-  // const sizeClass = `${size === "big" ? "image--big" : "image--small"}`;
-
-  return <img src={image} alt="" className={`shadow--b ${sizeClass}`} />;
+  return (
+    <img
+      src={image}
+      alt=""
+      className={`shadow--b ${sizeClass} ${additionalStyles}`}
+    />
+  );
 };
 
 export default Image;

@@ -1,30 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+
+import { TimeZoneContext } from "../../contexts/timeZone-context";
 
 import Image from "../image/image.component";
 
 import "./daily-box.styles.scss";
 
-import { WeatherOneDay } from "../../App";
-
-// , selectedBox, onBoxClickHandler
-//FIXME don't prop drill timeZone
+export type WeatherOneDay = {
+  temp: { max: number };
+  weather: [{ main: string; icon: string }];
+};
 
 type HourlyBoxProps = {
   box: WeatherOneDay;
   id: number;
-  timeZone: string;
 };
 
-//{ box, id, timeZone }: HourlyBoxProps
-const DailyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
+const DailyBox = ({ box, id }: HourlyBoxProps) => {
   const [dayNum, setDayNum] = useState(0);
   const [dayString, setDayString] = useState("Sun");
+
+  const { timeZone } = useContext(TimeZoneContext);
 
   const temp = box.temp.max;
   const desc = box.weather[0].main;
   const iconCode = box.weather[0].icon;
-
-  const addidtionalIconStyle = iconCode === "01d" ? "sun-make-smaller" : "";
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -91,10 +91,11 @@ const DailyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
       <p className="tab-box-day__date">
         {dayString} {dayNum}
       </p>
-      {/* <p className="tab-box-day__date">Sun 30</p> */}
-      <div className={`tab-box-day__img ${addidtionalIconStyle}`}>
+
+      <div className={`tab-box-day__img`}>
         <Image imageCode={iconCode} size={"medium"} />
       </div>
+
       <p className="tab-box-day__temp temp">
         {Math.trunc(temp)}
         <sup className="celcius">
@@ -102,6 +103,7 @@ const DailyBox = ({ box, id, timeZone }: HourlyBoxProps) => {
           <span className="celcius__c">c</span>
         </sup>
       </p>
+
       <p className="tab-box-day__desc">{desc}</p>
     </div>
   );
