@@ -251,7 +251,7 @@ const App = () => {
     try {
       if (!searchCityName) return;
 
-      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${searchCityName}&limit=1&appid=${API_KEY}`;
+      const url = `https://api.openweathermap.org/geo/1.0/direct?q=${searchCityName}&limit=1&appid=${API_KEY}`;
 
       const res = await fetch(url);
       const data = await res.json();
