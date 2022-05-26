@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { useState, useEffect, useContext } from "react";
+import { useErrorHandler } from "react-error-boundary";
 
 import TabList from "./components/tablist/tablist.component";
 import Search from "./components/search/search.component";
@@ -48,6 +49,8 @@ const EXCLUDE = "minutely,alerts";
 
 //TODO loading message?
 const App = () => {
+  const handleError = useErrorHandler();
+
   const [loading, setLoading] = useState(true);
 
   const [coords, setCoords] = useState<Coords>({ lat: 52.2297, lng: 21.0122 });
@@ -163,7 +166,7 @@ const App = () => {
 
         setCityName(data.city);
       } catch (err) {
-        console.log(err);
+        handleError(err);
       }
     };
 
@@ -202,7 +205,7 @@ const App = () => {
         })
       );
     } catch (err) {
-      console.log(err, "could not get location");
+      handleError(err);
     }
   };
 
@@ -220,7 +223,6 @@ const App = () => {
     setHourlyWeather(data.hourly);
     setDailyWeather(data.daily);
 
-    //FIXME thats bad?
     setLoading(false);
   };
 
@@ -241,8 +243,7 @@ const App = () => {
 
       setWeatherVariables(data);
     } catch (err) {
-      //TODO error msg
-      console.log(err, "error fetching WEATHER data");
+      handleError(err);
     }
   };
 
@@ -259,7 +260,7 @@ const App = () => {
 
       setCityCoords({ lat: data[0].lat, lng: data[0].lon });
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
   };
 
@@ -274,7 +275,6 @@ const App = () => {
 
   return (
     <Fragment>
-      {/*TODO add LOADING COMPONENT */}
       {loading === false ? (
         <div className="container">
           <Header

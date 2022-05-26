@@ -1,0 +1,19 @@
+.loading-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 3px solid white;
+  border-top: 3px solid transparent;
+
+  // the duration needs to be specified (facepalm)
+  animation: rotateLoadingCircle 1s linear infinite;
+}
+
+@keyframes rotateLoadingCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -15,7 +15,6 @@ export const TimeZoneContextProvider = ({ children }: Props) => {
   const value = { timeZone, setTimezone };
 
   return (
-    //@ts-ignore
     <TimeZoneContext.Provider value={value}>
       {children}
     </TimeZoneContext.Provider>
