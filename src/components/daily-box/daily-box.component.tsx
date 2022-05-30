@@ -31,13 +31,15 @@ const DailyBox = ({ box, id }: HourlyBoxProps) => {
   };
 
   const getDisplayDayNum = (dayNum: number, daysInMonth: number) => {
+    // console.log("id", id);
     // console.log("day today", dayNum);
-    if (dayNum + id < daysInMonth) {
+    if (dayNum + id <= daysInMonth) {
       // console.log("AAA day with id", dayNum + id);
       return dayNum + id;
     } else {
-      // console.log("BBB day with id", daysInMonth - (dayNum + id));
-      return daysInMonth - (dayNum + id);
+      // console.log("BBB day with id", dayNum + id - daysInMonth);
+      // Days in month is for previous month here, but it does not matter because we don't have enough day cards for that to be an issue
+      return dayNum + id - daysInMonth;
     }
   };
 

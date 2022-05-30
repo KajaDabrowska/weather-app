@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback } from "react";
 import { useState, useEffect, useContext } from "react";
 import { useErrorHandler } from "react-error-boundary";
 
@@ -41,13 +41,22 @@ type Data = {
   };
 };
 
+type Bookmark = {
+  cityName: string;
+  coords: Coords;
+};
+
+// type BookmarksArray = {
+//   bookmarks: Bookmark[];
+// };
+
 const API_KEY = "3585e187fe2dcd51bd3ecd35186e4637";
 // units for API call
 const UNITS = "metric";
 // what to exclude from API call, divided by ","
 const EXCLUDE = "minutely,alerts";
 
-//TODO loading message?
+//TODO make use of useCallback and useMemo wherever u can
 const App = () => {
   const handleError = useErrorHandler();
 
@@ -58,6 +67,7 @@ const App = () => {
     lat: null,
     lng: null,
   });
+  // console.log("coords", coords);
 
   const [cityName, setCityName] = useState("Warsaw");
   const [searchCityName, setSearchCityName] = useState<string | null>(null);
@@ -96,7 +106,13 @@ const App = () => {
     null
   );
 
-  //TODO error msg if geolocation not available
+  //TODO
+  // BOOKMARKS
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  // console.log("bookmarks", ...bookmarks);
+
+  const [cityIsBookmarked, setCityIsBookmarked] = useState(false);
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       // console.log("Geolocation available");
@@ -273,6 +289,54 @@ const App = () => {
     setSearchCityName(textValue);
   };
 
+  // this is for adding an active class on the bookmark icon
+  const checkIfCityIsBookmarked = useCallback(() => {
+    const cityToCheck = searchCityName ? searchCityName : cityName;
+    // console.log("city to check", cityToCheck);
+
+    // i know this is redundant(it's also in addBookmark func)
+    // but making a seperate func just for this is maybe a bit too much?
+    const alreadyBookmarked = bookmarks.find(
+      (bookmark) => bookmark.cityName === cityToCheck
+    );
+    // if city is bookmarked add class
+    if (alreadyBookmarked) {
+      setCityIsBookmarked(true);
+    } else {
+      setCityIsBookmarked(false);
+    }
+  }, [cityName, searchCityName, bookmarks]);
+
+  useEffect(() => {
+    // console.log("checkIfCityIsBookmarked");
+    checkIfCityIsBookmarked();
+  });
+
+  const addBookmard = () => {
+    const cityNameForBookmark = searchCityName ? searchCityName : cityName;
+    const coordsForBookmark = cityCoords.lat ? cityCoords : coords;
+
+    // check if not already in bookmarks
+    const alreadyBookmarked = bookmarks.find(
+      (bookmark) => bookmark.cityName === cityNameForBookmark
+    );
+
+    if (alreadyBookmarked) {
+      // if it is then delete
+      setBookmarks((previousBookmarks) => [
+        ...previousBookmarks.filter(
+          (bookmark) => bookmark !== alreadyBookmarked
+        ),
+      ]);
+    } else {
+      // if not then add
+      setBookmarks((previousBookmarks) => [
+        ...previousBookmarks,
+        { cityName: cityNameForBookmark, coords: coordsForBookmark },
+      ]);
+    }
+  };
+
   return (
     <Fragment>
       {loading === false ? (
@@ -281,6 +345,8 @@ const App = () => {
             cityName={cityName}
             searchCityName={searchCityName}
             date={date}
+            addBookmard={addBookmard}
+            cityIsBookmarked={cityIsBookmarked}
           />
 
           <main>

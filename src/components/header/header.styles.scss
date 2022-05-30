@@ -6,3 +6,28 @@
     font-weight: 500;
   }
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__city {
+    font-size: 2.5rem;
+    font-weight: 500;
+  }
+
+  &__icon {
+    cursor: pointer;
+    width: 3rem;
+
+    // &--bookbinder {
+    // }
+    // &--bookmark {
+    // }
+
+    &--bookmark.active {
+      fill: hsl(var(--clr-white));
+    }
+  }
+}

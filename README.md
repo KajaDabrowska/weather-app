@@ -10,6 +10,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 - Dates and hours change according to time zone.
 
+//TODO
+
+- Bookmark city functionality
+
 ### Live site
 
 https://weather-app-kaja.netlify.app
