@@ -85,7 +85,7 @@ const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
         {/* HOUR/DAILY BUTTONS */}
         <button
           onClick={changePanelToHourly}
-          className={`btn ${!dailyTabActive ? "active" : ""}`}
+          className={`btn btn-clear-styles ${!dailyTabActive ? "active" : ""}`}
           role="tab"
           aria-controls="hourly-tab"
           aria-selected={!dailyTabActive}
@@ -95,7 +95,7 @@ const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
         </button>
         <button
           onClick={changePanelToDaily}
-          className={`btn ${dailyTabActive ? "active" : ""}`}
+          className={`btn btn-clear-styles ${dailyTabActive ? "active" : ""}`}
           role="tab"
           aria-controls="daily-tab"
           aria-selected={dailyTabActive}

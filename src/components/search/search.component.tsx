@@ -38,7 +38,7 @@ const Search = ({ handleSearch }: SearchProps) => {
         Search by city
       </label>
 
-      <button type="submit" className="search__btn">
+      <button type="submit" className="search__btn btn-clear-styles">
         <span className="sr-only">Search</span>
         <img src={searchTool} alt="" className="search__image" />
       </button>

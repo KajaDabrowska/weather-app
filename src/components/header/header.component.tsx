@@ -11,6 +11,7 @@ export type HeaderProps = {
   date: string;
   addBookmard: () => void;
   cityIsBookmarked: boolean;
+  toggleBookmarkBinderVisHanlder: () => void;
 };
 
 const Header = ({
@@ -19,6 +20,7 @@ const Header = ({
   date,
   addBookmard,
   cityIsBookmarked,
+  toggleBookmarkBinderVisHanlder,
 }: HeaderProps) => {
   const [bookmarkActive, setBookmarkActive] = useState(false);
 
@@ -32,7 +34,12 @@ const Header = ({
 
   return (
     <header className="header--container header">
-      <BookBinderSvg className="header__icon header__icon--bookbinder" />
+      <button
+        onClick={toggleBookmarkBinderVisHanlder}
+        className="btn-clear-styles"
+      >
+        <BookBinderSvg className="header__icon header__icon--bookbinder" />
+      </button>
 
       <div className="city-and-date">
         <h1 className="header__city">
@@ -41,10 +48,11 @@ const Header = ({
         <p className="header__date">{date}</p>
       </div>
 
-      <BookmarkEmptySvg
-        onClick={addBookmardHandler}
-        className={`header__icon header__icon--bookmark ${activeClass} `}
-      />
+      <button onClick={addBookmardHandler} className="btn-clear-styles">
+        <BookmarkEmptySvg
+          className={`header__icon header__icon--bookmark ${activeClass} `}
+        />
+      </button>
     </header>
   );
 };

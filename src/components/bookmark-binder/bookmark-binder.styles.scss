@@ -1,0 +1,60 @@
+@keyframes fadeIn {
+  0% {
+    display: none;
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    display: inline-block;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.book-binder {
+  z-index: 5000;
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  left: 0;
+  padding: var(--container-padding);
+  height: 100%;
+  width: 80%;
+  text-align: left;
+  animation: fadeIn 0.3s ease-in-out;
+
+  &__title-and-close-btn {
+    display: flex;
+    margin-bottom: 2rem;
+  }
+
+  &__title {
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  &__close-btn {
+    margin-top: 0.5rem;
+    margin-left: auto;
+  }
+
+  &__close-icon {
+    width: 1.5rem;
+  }
+
+  &__empty-msg {
+    font-size: 1.7rem;
+    font-weight: 400;
+
+    margin-top: 2rem;
+  }
+
+  &__bookmark {
+    margin-bottom: 1rem;
+  }
+
+  &__bookmark-btn {
+    font-size: 1.8rem;
+    font-weight: 400;
+  }
+}

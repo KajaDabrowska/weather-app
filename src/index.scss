@@ -22,6 +22,8 @@
   --p-top-m: 5rem;
   --p-top-b: 10rem;
   /* --flow-space: 1rem; */
+
+  --container-padding: 1.5rem 2rem;
 }
 
 /* --------------------- */
@@ -157,8 +159,11 @@ select {
   height: 100%;
   border: 2px solid hsl(var(--clr-white));
   border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  padding: var(--container-padding);
   overflow-x: hidden;
+
+  // For BookmarkBinder
+  position: relative;
 }
 
 .p-top-b {
@@ -176,6 +181,13 @@ select {
   align-items: center;
 }
 
+.btn-clear-styles {
+  cursor: pointer;
+  background-color: transparent;
+  color: hsl(var(--clr-white));
+  border: none;
+}
+
 /* background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(62,133,238,1) 1.1%, rgba(227,137,240,1) 43.7%, rgba(243,193,124,1) 89.7% ); */
 
 .glass {
@@ -188,6 +200,8 @@ select {
 }
 
 p.shadow,
+h2.shadow,
+button.shadow,
 span.shadow,
 label.shadow,
 div.shadow {

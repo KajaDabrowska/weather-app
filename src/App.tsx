@@ -1,5 +1,4 @@
-import { Fragment, useCallback } from "react";
-import { useState, useEffect, useContext } from "react";
+import { Fragment, useState, useEffect, useContext, useCallback } from "react";
 import { useErrorHandler } from "react-error-boundary";
 
 import TabList from "./components/tablist/tablist.component";
@@ -9,6 +8,7 @@ import Header from "./components/header/header.component";
 import MainDisplay, {
   NowWeather,
 } from "./components/main-display/main-display.component";
+import BookmarkBinder from "./components/bookmark-binder/bookmark-binder.component";
 
 import { WeatherOneHour } from "./components/hourly-box/hourly-box.component";
 import { WeatherOneDay } from "./components/daily-box/daily-box.component";
@@ -41,7 +41,7 @@ type Data = {
   };
 };
 
-type Bookmark = {
+export type BookmarkType = {
   cityName: string;
   coords: Coords;
 };
@@ -58,7 +58,9 @@ const EXCLUDE = "minutely,alerts";
 
 //TODO make use of useCallback and useMemo wherever u can
 const App = () => {
+  //TODO can i memoize this? do i?
   const handleError = useErrorHandler();
+  // const handleError = useCallback(useErrorHandler(), []);
 
   const [loading, setLoading] = useState(true);
 
@@ -108,10 +110,24 @@ const App = () => {
 
   //TODO
   // BOOKMARKS
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
   // console.log("bookmarks", ...bookmarks);
 
   const [cityIsBookmarked, setCityIsBookmarked] = useState(false);
+
+  const getPosition = useCallback(async () => {
+    // console.log("getPos goes off");
+    try {
+      await navigator.geolocation.getCurrentPosition((position) =>
+        setCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+      );
+    } catch (err) {
+      handleError(err);
+    }
+  }, []);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -121,7 +137,7 @@ const App = () => {
     } else {
       console.log("Geolocation Not Available");
     }
-  }, []);
+  }, [getPosition]);
 
   /* ---------------------------- */
   /* -- SET TIMEZONE AND DATE -- */
@@ -173,6 +189,7 @@ const App = () => {
     // console.log("i get city cuz coords changed");
     //TODO bookmark cities?
     const getCity = async () => {
+      // console.log("getCity");
       try {
         const { lat, lng } = coords;
         const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
@@ -199,12 +216,6 @@ const App = () => {
   /* --------------------------- */
 
   useEffect(() => {
-    // console.log("coords changed so i can fetch weather data");
-
-    getWeather(forSearchedCity.notForCity);
-  }, [coords]);
-
-  useEffect(() => {
     getCoordsFromSearchedCity();
   }, [searchCityName]);
 
@@ -212,20 +223,7 @@ const App = () => {
     getWeather(forSearchedCity.forCity);
   }, [cityCoords]);
 
-  const getPosition = async () => {
-    try {
-      await navigator.geolocation.getCurrentPosition((position) =>
-        setCoords({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      );
-    } catch (err) {
-      handleError(err);
-    }
-  };
-
-  const setWeatherVariables = (data: Data) => {
+  const setWeatherVariables = useCallback((data: Data) => {
     // console.log(data);
     setNowTemp(data.current.temp);
     setNowDesc(data.current.weather[0].description);
@@ -240,30 +238,39 @@ const App = () => {
     setDailyWeather(data.daily);
 
     setLoading(false);
-  };
+  }, []);
 
-  const getWeather = async (fromSearch: boolean) => {
-    setLoading(true);
+  const getWeather = useCallback(
+    async (fromSearch: boolean) => {
+      setLoading(true);
 
-    try {
-      const { lat, lng } = fromSearch ? cityCoords : coords;
+      try {
+        const { lat, lng } = fromSearch ? cityCoords : coords;
 
-      if (lat === null) return;
+        if (lat === null) return;
 
-      const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=${UNITS}&exclude=${EXCLUDE}&appid=${API_KEY}`;
-      // console.log(url);
+        const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=${UNITS}&exclude=${EXCLUDE}&appid=${API_KEY}`;
+        // console.log(url);
 
-      const res = await fetch(url);
-      const data = await res.json();
-      // console.log("Weather data: ", data);
+        const res = await fetch(url);
+        const data = await res.json();
+        // console.log("Weather data: ", data);
 
-      setWeatherVariables(data);
-    } catch (err) {
-      handleError(err);
-    }
-  };
+        setWeatherVariables(data);
+      } catch (err) {
+        handleError(err);
+      }
+    },
+    [coords, cityCoords]
+  );
 
-  const getCoordsFromSearchedCity = async () => {
+  useEffect(() => {
+    // console.log("coords changed so i can fetch weather data");
+
+    getWeather(forSearchedCity.notForCity);
+  }, [coords]);
+
+  const getCoordsFromSearchedCity = useCallback(async () => {
     try {
       if (!searchCityName) return;
 
@@ -278,17 +285,20 @@ const App = () => {
     } catch (err) {
       handleError(err);
     }
-  };
+  }, [searchCityName]);
 
-  const handleSearch = (
-    e: React.FormEvent<HTMLFormElement>,
-    textValue: string
-  ) => {
-    e.preventDefault();
+  const handleSearch = useCallback(
+    (e: React.FormEvent<HTMLFormElement>, textValue: string) => {
+      e.preventDefault();
 
-    setSearchCityName(textValue);
-  };
+      if (textValue) setSearchCityName(textValue);
+    },
+    []
+  );
 
+  /* -------------------- */
+  /* ---- BOOKMARKS ----- */
+  /* -------------------- */
   // this is for adding an active class on the bookmark icon
   const checkIfCityIsBookmarked = useCallback(() => {
     const cityToCheck = searchCityName ? searchCityName : cityName;
@@ -312,7 +322,7 @@ const App = () => {
     checkIfCityIsBookmarked();
   });
 
-  const addBookmard = () => {
+  const addBookmard = useCallback(() => {
     const cityNameForBookmark = searchCityName ? searchCityName : cityName;
     const coordsForBookmark = cityCoords.lat ? cityCoords : coords;
 
@@ -335,6 +345,13 @@ const App = () => {
         { cityName: cityNameForBookmark, coords: coordsForBookmark },
       ]);
     }
+  }, [bookmarks, cityCoords, cityName, searchCityName, coords]);
+
+  const [bookmarkBinderVisible, toggleBookmarkBinderVisible] = useState(false);
+  // console.log(bookmarkBinderVisible);
+
+  const toggleBookmarkBinderVisHanlder = () => {
+    toggleBookmarkBinderVisible((prevValue) => !prevValue);
   };
 
   return (
@@ -347,9 +364,21 @@ const App = () => {
             date={date}
             addBookmard={addBookmard}
             cityIsBookmarked={cityIsBookmarked}
+            toggleBookmarkBinderVisHanlder={toggleBookmarkBinderVisHanlder}
           />
 
           <main>
+            {bookmarkBinderVisible ? (
+              <BookmarkBinder
+                toggleBookmarkBinderVisHanlder={toggleBookmarkBinderVisHanlder}
+                bookmarks={bookmarks}
+                setSearchCityName={setSearchCityName}
+                bookmarkBinderVisible={bookmarkBinderVisible}
+              />
+            ) : (
+              ""
+            )}
+
             <MainDisplay nowWeather={nowWeather} />
 
             {hourlyWeather && dailyWeather && (

@@ -53,13 +53,10 @@
   }
 
   &__btn {
-    cursor: pointer;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     right: 1rem;
-    background-color: transparent;
-    border: none;
 
     transition: all 0.2s ease-in-out;
   }

@@ -44,16 +44,12 @@
       }
     }
   }
-}
 
-.btn {
-  cursor: pointer;
-  background-color: transparent;
-  border: none;
-  color: hsl(var(--clr--white));
-  font-weight: 500;
+  .btn {
+    font-weight: 500;
 
-  &.active {
-    font-size: 2rem;
+    &.active {
+      font-size: 2rem;
+    }
   }
 }
