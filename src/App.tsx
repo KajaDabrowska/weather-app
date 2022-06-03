@@ -1,6 +1,7 @@
 import { Fragment, useState, useEffect, useContext, useCallback } from "react";
 import { useErrorHandler } from "react-error-boundary";
 
+// Components
 import TabList from "./components/tablist/tablist.component";
 import Search from "./components/search/search.component";
 import LoadingSpinner from "./components/loadingSpinner/loading-spinner.component";
@@ -10,10 +11,15 @@ import MainDisplay, {
 } from "./components/main-display/main-display.component";
 import BookmarkBinder from "./components/bookmark-binder/bookmark-binder.component";
 
+// Types
 import { WeatherOneHour } from "./components/hourly-box/hourly-box.component";
 import { WeatherOneDay } from "./components/daily-box/daily-box.component";
 
+// Context
 import { TimeZoneContext } from "./contexts/timeZone-context";
+
+// Utilities
+import { useLocalStorage } from "./useLocalStorage";
 
 // import "./App.scss";
 
@@ -108,10 +114,10 @@ const App = () => {
     null
   );
 
-  //TODO
-  // BOOKMARKS
-  const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
-  // console.log("bookmarks", ...bookmarks);
+  const [bookmarks, setBookmarks] = useLocalStorage<BookmarkType[]>(
+    "bookmarks",
+    []
+  );
 
   const [cityIsBookmarked, setCityIsBookmarked] = useState(false);
 
@@ -186,8 +192,6 @@ const App = () => {
   /* ------  GET CITY   ------- */
   /* -------------------------- */
   useEffect(() => {
-    // console.log("i get city cuz coords changed");
-    //TODO bookmark cities?
     const getCity = async () => {
       // console.log("getCity");
       try {
@@ -306,7 +310,7 @@ const App = () => {
 
     // i know this is redundant(it's also in addBookmark func)
     // but making a seperate func just for this is maybe a bit too much?
-    const alreadyBookmarked = bookmarks.find(
+    const alreadyBookmarked = bookmarks?.find(
       (bookmark) => bookmark.cityName === cityToCheck
     );
     // if city is bookmarked add class
@@ -327,7 +331,7 @@ const App = () => {
     const coordsForBookmark = cityCoords.lat ? cityCoords : coords;
 
     // check if not already in bookmarks
-    const alreadyBookmarked = bookmarks.find(
+    const alreadyBookmarked = bookmarks?.find(
       (bookmark) => bookmark.cityName === cityNameForBookmark
     );
 

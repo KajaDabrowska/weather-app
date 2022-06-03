@@ -12,13 +12,10 @@ import "./bookmark-binder.styles.scss";
 
 type Props = {
   toggleBookmarkBinderVisHanlder: () => void;
-  bookmarks: BookmarkType[];
+  bookmarks: BookmarkType[] | undefined;
   setSearchCityName: React.Dispatch<React.SetStateAction<string | null>>;
   bookmarkBinderVisible: boolean;
 };
-
-//TODO bookmarks to local storage
-// but persisting more data does not make sense since it's always changing
 
 const BookmarkBinder = ({
   toggleBookmarkBinderVisHanlder,
@@ -48,7 +45,7 @@ const BookmarkBinder = ({
           </button>
         </div>
 
-        {bookmarks.length ? (
+        {bookmarks?.length ? (
           <ul className="book-binder__list">
             {bookmarks.map((bookmark) => (
               <li className="book-binder__bookmark" key={uuidv4()}>

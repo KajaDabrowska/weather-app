@@ -10,9 +10,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 - Dates and hours change according to time zone.
 
-//TODO
-
 - Bookmark city functionality
+
+- Built with accessibility in mind
 
 ### Live site
 
