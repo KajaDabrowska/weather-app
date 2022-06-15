@@ -25,16 +25,43 @@ const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselLenght = 5;
 
-  const translateValueForHourly = -67;
-  const translateValueForDaily = -51;
+  const { width: windowWidth } = useWindowSize();
+
+  const [widthForMediaHourly, setWidthForMediaHourly] = useState(57);
+  const [widthForMediaDaily, setWidthForMediaDaily] = useState(44);
+
+  const isInMediaQuerry = windowWidth < 450;
+
+  useEffect(() => {
+    if (windowWidth > 390) {
+      setWidthForMediaHourly(60 - windowWidth / 30);
+      setWidthForMediaDaily(45 - windowWidth / 30);
+    } else if (windowWidth > 360 && windowWidth < 390) {
+      setWidthForMediaHourly(67 - windowWidth / 30);
+      setWidthForMediaDaily(52 - windowWidth / 30);
+    } else if (windowWidth > 320 && windowWidth < 360) {
+      setWidthForMediaHourly(78 - windowWidth / 30);
+      setWidthForMediaDaily(60 - windowWidth / 30);
+    } else if (windowWidth < 320 && windowWidth > 290) {
+      setWidthForMediaHourly(85 - windowWidth / 30);
+      setWidthForMediaDaily(68 - windowWidth / 30);
+    } else if (windowWidth < 290) {
+      setWidthForMediaHourly(89 - windowWidth / 30);
+      setWidthForMediaDaily(72 - windowWidth / 30);
+    }
+  }, [windowWidth]);
+
+  const translateValueForHourly = isInMediaQuerry ? widthForMediaHourly : 57;
+
+  const translateValueForDaily = isInMediaQuerry ? widthForMediaDaily : 44;
   const translateValue = dailyTabActive
     ? translateValueForDaily
     : translateValueForHourly;
 
   const styles = {
-    transform: `translateX(${carouselIndex * translateValue}%)`,
+    transform: `translateX(-${carouselIndex * translateValue}%)`,
   };
-
+  // console.log("styles", styles);
   const scrollHanlderLeft = () => {
     if (carouselIndex === 0) {
       // do nothing
@@ -104,7 +131,6 @@ const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
           Daily {!dailyTabActive ? `>` : ""}
         </button>
       </div>
-
       {/* --- TAB PANEL --- */}
       <div className="tab-panel" id="hourly-tab" role="tabpanel">
         {/* BOXES  */}
@@ -144,14 +170,28 @@ const TabList = ({ hourlyWeather, dailyWeather }: TabListProps) => {
 
 export default TabList;
 
-// <div
-//   key={box}
-//   className={`tab-panel__box ${box === selectedBox ? "active" : ""}`}
-//   onClick={() => onBoxClickHandler(box)}
-// >
-//   <div className="time">09:00</div>
-//   <div className="img">image</div>
-//   <div className="temp">
-//     2°<sup>C</sup>
-//   </div>
-// </div>
+function useWindowSize() {
+  // Initialize state with undefined width/height so server and client renders match
+  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+  const [windowSize, setWindowSize] = useState({
+    width: 0,
+    height: 0,
+  });
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+  return windowSize;
+}

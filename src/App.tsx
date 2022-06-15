@@ -361,39 +361,43 @@ const App = () => {
   return (
     <Fragment>
       {loading === false ? (
-        <div className="container">
-          <Header
-            cityName={cityName}
-            searchCityName={searchCityName}
-            date={date}
-            addBookmard={addBookmard}
-            cityIsBookmarked={cityIsBookmarked}
-            toggleBookmarkBinderVisHanlder={toggleBookmarkBinderVisHanlder}
-          />
+        <div className="border">
+          <div className="container ">
+            <Header
+              cityName={cityName}
+              searchCityName={searchCityName}
+              date={date}
+              addBookmard={addBookmard}
+              cityIsBookmarked={cityIsBookmarked}
+              toggleBookmarkBinderVisHanlder={toggleBookmarkBinderVisHanlder}
+            />
 
-          <main>
-            {bookmarkBinderVisible ? (
-              <BookmarkBinder
-                toggleBookmarkBinderVisHanlder={toggleBookmarkBinderVisHanlder}
-                bookmarks={bookmarks}
-                setSearchCityName={setSearchCityName}
-                bookmarkBinderVisible={bookmarkBinderVisible}
-              />
-            ) : (
-              ""
-            )}
+            <main>
+              {bookmarkBinderVisible ? (
+                <BookmarkBinder
+                  toggleBookmarkBinderVisHanlder={
+                    toggleBookmarkBinderVisHanlder
+                  }
+                  bookmarks={bookmarks}
+                  setSearchCityName={setSearchCityName}
+                  bookmarkBinderVisible={bookmarkBinderVisible}
+                />
+              ) : (
+                ""
+              )}
 
-            <MainDisplay nowWeather={nowWeather} />
+              <MainDisplay nowWeather={nowWeather} />
 
-            {hourlyWeather && dailyWeather && (
-              <TabList
-                hourlyWeather={hourlyWeather}
-                dailyWeather={dailyWeather}
-              />
-            )}
+              {hourlyWeather && dailyWeather && (
+                <TabList
+                  hourlyWeather={hourlyWeather}
+                  dailyWeather={dailyWeather}
+                />
+              )}
 
-            <Search handleSearch={handleSearch} />
-          </main>
+              <Search handleSearch={handleSearch} />
+            </main>
+          </div>
         </div>
       ) : (
         <LoadingSpinner />
