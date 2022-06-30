@@ -70,29 +70,33 @@ const App = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const [coords, setCoords] = useState<Coords>({ lat: 52.2297, lng: 21.0122 });
+  const [coords, setCoords] = useState<Coords>({
+    lat: 52.229,
+    lng: 21.012,
+  });
+
   const [cityCoords, setCityCoords] = useState<Coords>({
     lat: null,
     lng: null,
   });
   // console.log("coords", coords);
 
-  const [cityName, setCityName] = useState("Warsaw");
+  const [cityName, setCityName] = useState("");
   const [searchCityName, setSearchCityName] = useState<string | null>(null);
 
   //TIMEZONE for searched cities
   const { timeZone, setTimezone } = useContext(TimeZoneContext);
 
-  const [date, setDate] = useState("Tue, May 24");
+  const [date, setDate] = useState("");
 
   // NOW
-  const [nowTemp, setNowTemp] = useState(17.45);
-  const [nowDesc, setNowDesc] = useState("clear sky");
-  const [nowIcon, setNowIcon] = useState("01d");
+  const [nowTemp, setNowTemp] = useState<number | null>(null);
+  const [nowDesc, setNowDesc] = useState("");
+  const [nowIcon, setNowIcon] = useState("");
 
-  const [nowHumid, setNowHumid] = useState(57);
-  const [nowWind, setNowWind] = useState(6);
-  const [nowClouds, setNowClouds] = useState(0);
+  const [nowHumid, setNowHumid] = useState<number | null>(null);
+  const [nowWind, setNowWind] = useState<number | null>(null);
+  const [nowClouds, setNowClouds] = useState<number | null>(null);
 
   const nowWeather: NowWeather = {
     nowTemp: nowTemp,
@@ -130,6 +134,16 @@ const App = () => {
           lng: position.coords.longitude,
         })
       );
+
+      // If I ever decided to do something in case someone doesn't let geolocate themselves
+      // const { state: geolocationPermission } =
+      //   await navigator.permissions.query({
+      //     name: "geolocation",
+      //   });
+
+      // if (geolocationPermission === "denied") {
+      //   //
+      // }
     } catch (err) {
       handleError(err);
     }
@@ -202,6 +216,7 @@ const App = () => {
         const data = await res.json();
 
         setCityName(data.city);
+        // console.log("cityName: ", data.city);
       } catch (err) {
         handleError(err);
       }
@@ -228,6 +243,7 @@ const App = () => {
   }, [cityCoords]);
 
   const setWeatherVariables = useCallback((data: Data) => {
+    // console.log("i SET weather");
     // console.log(data);
     setNowTemp(data.current.temp);
     setNowDesc(data.current.weather[0].description);
@@ -246,6 +262,8 @@ const App = () => {
 
   const getWeather = useCallback(
     async (fromSearch: boolean) => {
+      // console.log("i get weather");
+      // console.log("weather, coords", coords);
       setLoading(true);
 
       try {

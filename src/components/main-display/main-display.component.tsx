@@ -7,13 +7,13 @@ import windImage from "../../images/image-wind.svg";
 import cloudImage from "../../images/image-cloud.svg";
 
 export type NowWeather = {
-  nowTemp: number;
+  nowTemp: number | null;
   nowDesc: string;
   nowIcon: string;
 
-  nowHumid: number;
-  nowWind: number;
-  nowClouds: number;
+  nowHumid: number | null;
+  nowWind: number | null;
+  nowClouds: number | null;
 };
 
 type MainDisplayProps = {
@@ -33,7 +33,7 @@ const MainDisplay = ({ nowWeather }: MainDisplayProps) => {
       <div className="big--container ">
         <div className="tempDesc">
           <p className="temp shadow">
-            {Math.trunc(nowTemp)}
+            {nowTemp ? Math.trunc(nowTemp) : ""}
             <sup className="celcius">
               <span className="celcius__degree">°</span>
               <span className="celcius__c">c</span>
@@ -50,7 +50,10 @@ const MainDisplay = ({ nowWeather }: MainDisplayProps) => {
         <div className="details">
           <img src={windImage} alt="" className="image shadow" />
 
-          <p>{Math.trunc(nowWind)} km/h</p>
+          <p>
+            {nowWind ? Math.trunc(nowWind) : ""}
+            km/h
+          </p>
         </div>
 
         <div className="details details__humid">
